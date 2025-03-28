@@ -39,56 +39,17 @@ nav:
   - Home: index.md
   - Tutorials:
     - Tutorials: tutorials/index.md
-    - Installing Fusion: tutorials/get-started/installing-fusion.md
-    - Developer Tools: tutorials/get-started/developer-tools.md
-    - Getting Help: tutorials/get-started/getting-help.md
-    - Fundamentals:
-      - Your First Project: tutorials/fundamentals/your-first-project.md
-      - Values: tutorials/fundamentals/values.md
-      - Observers: tutorials/fundamentals/observers.md
-      - Computeds: tutorials/fundamentals/computeds.md
-      - Scopes: tutorials/fundamentals/scopes.md
-    - Tables:
-      - ForValues: tutorials/tables/forvalues.md
-      - ForKeys: tutorials/tables/forkeys.md
-      - ForPairs: tutorials/tables/forpairs.md
-    - Animation:
-      - Tweens: tutorials/animation/tweens.md
-      - Springs: tutorials/animation/springs.md
-    - Roblox:
-      - Hydration: tutorials/roblox/hydration.md
-      - New Instances: tutorials/roblox/new-instances.md
-      - Parenting: tutorials/roblox/parenting.md
-      - Events: tutorials/roblox/events.md
-      - Change Events: tutorials/roblox/change-events.md
-      - Outputs: tutorials/roblox/outputs.md
-    - Best Practices:
-      - Components: tutorials/best-practices/components.md
-      - Instance Handling: tutorials/best-practices/instance-handling.md
-      - References: tutorials/best-practices/references.md
-      - Callbacks: tutorials/best-practices/callbacks.md
-      - State: tutorials/best-practices/state.md
-      - Sharing Values: tutorials/best-practices/sharing-values.md
-      - Error Safety: tutorials/best-practices/error-safety.md
-      - Optimisation: tutorials/best-practices/optimisation.md
 
   - Examples:
     - Examples: examples/index.md
     - Cookbook:
       - examples/cookbook/index.md
       - Player List: examples/cookbook/player-list.md
-      - Animated Computed: examples/cookbook/animated-computed.md
-      - Fetch Data From Server: examples/cookbook/fetch-data-from-server.md
-      - Light & Dark Theme: examples/cookbook/light-and-dark-theme.md
-      - Button Component: examples/cookbook/button-component.md
-      - Loading Spinner: examples/cookbook/loading-spinner.md
-      - Drag & Drop: examples/cookbook/drag-and-drop.md
   - API Reference:
     - API Reference: api-reference/index.md
-    
-    - V3:
-      - Endpoints: api-reference/v3/Endpoint/
-      - Schema: api-reference/v3/Schema/
+
+    - V3: api-reference/v3/index.md
+    - V4: api-reference/v4/index.md
 
 markdown_extensions:
   - admonition
@@ -101,6 +62,7 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.inlinehilite
+  - pymdownx.emoji
   - toc:
       permalink: true
   - pymdownx.highlight:
@@ -109,3 +71,5 @@ markdown_extensions:
 plugins:
   - search
   - literate-nav
+  - tags
+  - meta

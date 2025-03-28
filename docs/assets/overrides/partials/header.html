@@ -113,14 +113,12 @@
     {% endif %}
 
     <!-- Button to open search modal -->
-    {% if "search" in config["plugins"] %}
       <label class="md-header__button md-icon" for="__search">
         {% include ".icons/octicons/search-24.svg" %}
       </label>
 
       <!-- Search interface -->
       {% include "partials/search.html" %}
-    {% endif %}
 
     <!-- Repository information -->
     {% if config.repo_url %}
