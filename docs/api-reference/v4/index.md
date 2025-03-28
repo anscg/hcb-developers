@@ -21,7 +21,7 @@ hide:
 
   Scalar.createApiReference('#app', {
     // The URL of the OpenAPI/Swagger document
-    url: '',
+    url: '/assets/v4.yaml',
     // Avoid CORS issues
     proxyUrl: 'https://proxy.scalar.com',
   })

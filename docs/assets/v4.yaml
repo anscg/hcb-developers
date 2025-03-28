@@ -1,0 +1,498 @@
+openapi: 3.0.0
+info:
+  title: HCB API V4
+  description: The API for HCB V4
+  version: 4.0.0
+servers:
+  - url: https://hcb.hackclub.com/api/v4
+paths:
+  /events:
+    get:
+      summary: Get a list of events
+      parameters:
+        - name: limit
+          in: query
+          description: Number of events to return (default is 25)
+          required: false
+          schema:
+            type: integer
+            default: 25
+        - name: after
+          in: query
+          description: Cursor for pagination
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+  /events/{id}:
+    get:
+      summary: Get details of a specific event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Event details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+    patch:
+      summary: Update a specific event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Event update details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '200':
+          description: Event updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+  /events/{id}/transactions:
+    get:
+      summary: Get transactions for a specific event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of transactions to return (default is 25)
+          required: false
+          schema:
+            type: integer
+            default: 25
+        - name: after
+          in: query
+          description: Cursor for pagination
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+  /stripe_cards:
+    get:
+      summary: Get a list of Stripe cards
+      parameters:
+        - name: event_id
+          in: query
+          description: Filter by event ID
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of Stripe cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StripeCard'
+  /stripe_cards/{id}:
+    get:
+      summary: Get details of a specific Stripe card
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Stripe card details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripeCard'
+    patch:
+      summary: Update a specific Stripe card
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Stripe card update details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StripeCard'
+      responses:
+        '200':
+          description: Stripe card updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripeCard'
+  /stripe_cards/{id}/transactions:
+    get:
+      summary: Get transactions for a specific Stripe card
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+    patch:
+      summary: Update transactions for a specific Stripe card
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Transaction update details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        '200':
+          description: Transactions updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+  /invitations:
+    get:
+      summary: Get a list of invitations
+      responses:
+        '200':
+          description: A list of invitations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invitation'
+  /invitations/{id}:
+    get:
+      summary: Get details of a specific invitation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invitation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+    post:
+      summary: Accept an invitation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invitation accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+    delete:
+      summary: Reject an invitation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invitation rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+  /card_grants:
+    get:
+      summary: Get a list of card grants
+      parameters:
+        - name: event_id
+          in: query
+          description: Filter by event ID
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of card grants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardGrant'
+    post:
+      summary: Create a new card grant
+      parameters:
+        - name: event_id
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Card grant details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardGrant'
+      responses:
+        '201':
+          description: Card grant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant'
+  /card_grants/{id}:
+    get:
+      summary: Get details of a specific card grant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Card grant details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant'
+    post:
+      summary: Top up a card grant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Top up details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount_cents:
+                  type: integer
+      responses:
+        '200':
+          description: Card grant topped up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant'
+    patch:
+      summary: Update a card grant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updated card grant details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardGrant'
+      responses:
+        '200':
+          description: Card grant updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant'
+    delete:
+      summary: Cancel a card grant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Card grant cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant'
+  /receipts:
+    get:
+      summary: Get a list of receipts
+      parameters:
+        - name: transaction_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of receipts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Receipt'
+    post:
+      summary: Create a new receipt
+      parameters:
+        - name: transaction_id
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Receipt details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Receipt'
+      responses:
+        '201':
+          description: Receipt created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+  /stripe_terminal/connection_token:
+    get:
+      summary: Get a Stripe terminal connection token
+      responses:
+        '200':
+          description: Stripe terminal connection token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  terminal_connection_token:
+                    type: string
+  /comments:
+    get:
+      summary: Get a list of comments
+      parameters:
+        - name: transaction_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+  /transactions/{id}:
+    get:
+      summary: Get details of a specific transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+    patch:
+      summary: Update a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updated transaction details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        '200':
+          description: Transaction updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+  /transactions/missing_receipt:
+    get:
+      summary: Get transactions missing receipts
+      responses:
+        '200':
+          description: A list of transactions missing receipts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
