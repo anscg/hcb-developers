@@ -37,19 +37,18 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - Tutorials:
-    - Tutorials: tutorials/index.md
+  - Development:
+    - Development: development/index.md
 
-  - Examples:
-    - Examples: examples/index.md
-    - Cookbook:
-      - examples/cookbook/index.md
-      - Player List: examples/cookbook/player-list.md
+  - Guides: guides/
+
   - API Reference:
     - API Reference: api-reference/index.md
-
     - V3: api-reference/v3/index.md
     - V4: api-reference/v4/index.md
+
+  - Production: production/
+  - Research: research/
 
 markdown_extensions:
   - admonition

@@ -1,13 +1,33 @@
 openapi: 3.0.0
 info:
   title: HCB API V4
-  description: The API for HCB V4
+  description: V4 docs???? 🗣️
   version: 4.0.0
 servers:
-  - url: https://hcb.hackclub.com/api/v4
+  - url: https://hcb.hackclub.com/
+  - url: http://localhost:3000/
+tags:
+  - name: Events
+    description: Events endpoints
+  - name: Stripe Cards
+    description: Operations related to Stripe cards
+  - name: Invitations
+    description: Operations related to invitations
+  - name: Card Grants
+    description: Operations related to card grants
+  - name: Receipts
+    description: Operations related to receipts
+  - name: Transactions
+    description: Operations related to transactions
+  - name: Comments
+    description: Operations related to comments
+  - name: Stripe Terminal
+    description: Operations related to Stripe terminal
 paths:
-  /events:
+  /api/v4/events:
     get:
+      tags:
+        - Events
       summary: Get a list of events
       parameters:
         - name: limit
@@ -32,8 +52,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Event'
-  /events/{id}:
+  /api/v4/events/{id}:
     get:
+      tags:
+        - Events
       summary: Get details of a specific event
       parameters:
         - name: id
@@ -49,6 +71,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Event'
     patch:
+      tags:
+        - Events
       summary: Update a specific event
       parameters:
         - name: id
@@ -70,8 +94,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Event'
-  /events/{id}/transactions:
+  /api/v4/events/{id}/transactions:
     get:
+      tags:
+        - Events
+        - Transactions
       summary: Get transactions for a specific event
       parameters:
         - name: id
@@ -101,8 +128,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Transaction'
-  /stripe_cards:
+  /api/v4/stripe_cards:
     get:
+      tags:
+        - Stripe Cards
       summary: Get a list of Stripe cards
       parameters:
         - name: event_id
@@ -120,8 +149,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/StripeCard'
-  /stripe_cards/{id}:
+  /api/v4/stripe_cards/{id}:
     get:
+      tags:
+        - Stripe Cards
       summary: Get details of a specific Stripe card
       parameters:
         - name: id
@@ -137,6 +168,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/StripeCard'
     patch:
+      tags:
+        - Stripe Cards
       summary: Update a specific Stripe card
       parameters:
         - name: id
@@ -158,8 +191,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StripeCard'
-  /stripe_cards/{id}/transactions:
+  /api/v4/stripe_cards/{id}/transactions:
     get:
+      tags:
+        - Stripe Cards
+        - Transactions
       summary: Get transactions for a specific Stripe card
       parameters:
         - name: id
@@ -177,6 +213,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Transaction'
     patch:
+      tags:
+        - Stripe Cards
+        - Transactions
       summary: Update transactions for a specific Stripe card
       parameters:
         - name: id
@@ -198,8 +237,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transaction'
-  /invitations:
+  /api/v4/invitations:
     get:
+      tags:
+        - Invitations
       summary: Get a list of invitations
       responses:
         '200':
@@ -210,8 +251,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Invitation'
-  /invitations/{id}:
+  /api/v4/invitations/{id}:
     get:
+      tags:
+        - Invitations
       summary: Get details of a specific invitation
       parameters:
         - name: id
@@ -227,6 +270,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Invitation'
     post:
+      tags:
+        - Invitations
       summary: Accept an invitation
       parameters:
         - name: id
@@ -242,6 +287,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Invitation'
     delete:
+      tags:
+        - Invitations
       summary: Reject an invitation
       parameters:
         - name: id
@@ -256,8 +303,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Invitation'
-  /card_grants:
+  /api/v4/card_grants:
     get:
+      tags:
+        - Card Grants
       summary: Get a list of card grants
       parameters:
         - name: event_id
@@ -276,6 +325,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/CardGrant'
     post:
+      tags:
+        - Card Grants
       summary: Create a new card grant
       parameters:
         - name: event_id
@@ -297,8 +348,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CardGrant'
-  /card_grants/{id}:
+  /api/v4/card_grants/{id}:
     get:
+      tags:
+        - Card Grants
       summary: Get details of a specific card grant
       parameters:
         - name: id
@@ -314,6 +367,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CardGrant'
     post:
+      tags:
+        - Card Grants
       summary: Top up a card grant
       parameters:
         - name: id
@@ -339,6 +394,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CardGrant'
     patch:
+      tags:
+        - Card Grants
       summary: Update a card grant
       parameters:
         - name: id
@@ -361,6 +418,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CardGrant'
     delete:
+      tags:
+        - Card Grants
       summary: Cancel a card grant
       parameters:
         - name: id
@@ -375,8 +434,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CardGrant'
-  /receipts:
+  /api/v4/receipts:
     get:
+      tags:
+        - Receipts
       summary: Get a list of receipts
       parameters:
         - name: transaction_id
@@ -394,6 +455,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/Receipt'
     post:
+      tags:
+        - Receipts
       summary: Create a new receipt
       parameters:
         - name: transaction_id
@@ -415,8 +478,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Receipt'
-  /stripe_terminal/connection_token:
+  /api/v4/stripe_terminal/connection_token:
     get:
+      tags:
+        - Stripe Terminal
       summary: Get a Stripe terminal connection token
       responses:
         '200':
@@ -428,8 +493,10 @@ paths:
                 properties:
                   terminal_connection_token:
                     type: string
-  /comments:
+  /api/v4/comments:
     get:
+      tags:
+        - Comments
       summary: Get a list of comments
       parameters:
         - name: transaction_id
@@ -446,8 +513,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Comment'
-  /transactions/{id}:
+  /api/v4/transactions/{id}:
     get:
+      tags:
+        - Transactions
       summary: Get details of a specific transaction
       parameters:
         - name: id
@@ -463,6 +532,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Transaction'
     patch:
+      tags:
+        - Transactions
       summary: Update a transaction
       parameters:
         - name: id
@@ -484,8 +555,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transaction'
-  /transactions/missing_receipt:
+  /api/v4/transactions/missing_receipt:
     get:
+      tags:
+        - Transactions
+        - Receipts
       summary: Get transactions missing receipts
       responses:
         '200':
@@ -496,3 +570,331 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Transaction'
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the event
+        name:
+          type: string
+          description: Name of the event
+        description:
+          type: string
+          description: Description of the event
+        start_date:
+          type: string
+          format: date-time
+          description: Start date and time of the event
+        end_date:
+          type: string
+          format: date-time
+          description: End date and time of the event
+        location:
+          type: string
+          description: Location of the event
+        status:
+          type: string
+          enum: [planned, active, completed, cancelled]
+          description: Current status of the event
+        budget_cents:
+          type: integer
+          description: Budget for the event in cents
+        spent_cents:
+          type: integer
+          description: Amount spent for the event in cents
+        remaining_cents:
+          type: integer
+          description: Remaining budget for the event in cents
+        created_at:
+          type: string
+          format: date-time
+          description: When the event was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the event was last updated
+      required:
+        - id
+        - name
+        - status
+    
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the transaction
+        amount_cents:
+          type: integer
+          description: Transaction amount in cents
+        currency:
+          type: string
+          enum: [USD]
+          description: Currency of the transaction
+        description:
+          type: string
+          description: Description of the transaction
+        merchant:
+          type: string
+          description: Merchant name
+        status:
+          type: string
+          enum: [pending, completed, declined, voided]
+          description: Status of the transaction
+        category:
+          type: string
+          description: Category of the transaction
+        card_id:
+          type: string
+          format: uuid
+          description: ID of the card used for the transaction
+        event_id:
+          type: string
+          format: uuid
+          description: ID of the associated event
+        receipt_required:
+          type: boolean
+          description: Whether a receipt is required for this transaction
+        has_receipt:
+          type: boolean
+          description: Whether this transaction has a receipt
+        created_at:
+          type: string
+          format: date-time
+          description: When the transaction occurred
+        updated_at:
+          type: string
+          format: date-time
+          description: When the transaction was last updated
+      required:
+        - id
+        - amount_cents
+        - currency
+        - status
+    
+    StripeCard:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the card
+        last4:
+          type: string
+          description: Last 4 digits of the card
+        cardholder_name:
+          type: string
+          description: Name of the cardholder
+        expiry_month:
+          type: integer
+          description: Expiry month of the card
+        expiry_year:
+          type: integer
+          description: Expiry year of the card
+        brand:
+          type: string
+          description: Card brand (Visa, Mastercard, etc.)
+        status:
+          type: string
+          enum: [active, inactive, cancelled, expired]
+          description: Status of the card
+        event_id:
+          type: string
+          format: uuid
+          description: ID of the associated event
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user assigned to this card
+        spending_limit_cents:
+          type: integer
+          description: Spending limit for the card in cents
+        spent_cents:
+          type: integer
+          description: Amount spent on this card in cents
+        created_at:
+          type: string
+          format: date-time
+          description: When the card was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the card was last updated
+      required:
+        - id
+        - last4
+        - status
+    
+    Invitation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the invitation
+        email:
+          type: string
+          format: email
+          description: Email address of the invitee
+        role:
+          type: string
+          enum: [organizer, attendee, sponsor]
+          description: Role assigned to the invitee
+        event_id:
+          type: string
+          format: uuid
+          description: ID of the associated event
+        status:
+          type: string
+          enum: [pending, accepted, rejected, expired]
+          description: Status of the invitation
+        expires_at:
+          type: string
+          format: date-time
+          description: When the invitation expires
+        created_at:
+          type: string
+          format: date-time
+          description: When the invitation was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the invitation was last updated
+      required:
+        - id
+        - email
+        - role
+        - event_id
+        - status
+    
+    CardGrant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the card grant
+        amount_cents:
+          type: integer
+          description: Grant amount in cents
+        event_id:
+          type: string
+          format: uuid
+          description: ID of the associated event
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user receiving the grant
+        card_id:
+          type: string
+          format: uuid
+          description: ID of the card associated with this grant
+        status:
+          type: string
+          enum: [pending, active, cancelled, completed]
+          description: Status of the card grant
+        note:
+          type: string
+          description: Note about the card grant
+        created_at:
+          type: string
+          format: date-time
+          description: When the card grant was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the card grant was last updated
+        expires_at:
+          type: string
+          format: date-time
+          description: When the card grant expires
+      required:
+        - id
+        - amount_cents
+        - event_id
+        - status
+    
+    Receipt:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the receipt
+        transaction_id:
+          type: string
+          format: uuid
+          description: ID of the associated transaction
+        image_url:
+          type: string
+          format: uri
+          description: URL to the receipt image
+        notes:
+          type: string
+          description: Additional notes about the receipt
+        submitted_by:
+          type: string
+          format: uuid
+          description: ID of the user who submitted the receipt
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+          description: Status of the receipt
+        created_at:
+          type: string
+          format: date-time
+          description: When the receipt was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the receipt was last updated
+      required:
+        - id
+        - transaction_id
+        - image_url
+    
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the comment
+        transaction_id:
+          type: string
+          format: uuid
+          description: ID of the associated transaction
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user who made the comment
+        text:
+          type: string
+          description: Comment text
+        created_at:
+          type: string
+          format: date-time
+          description: When the comment was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the comment was last updated
+      required:
+        - id
+        - transaction_id
+        - user_id
+        - text
+  
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
