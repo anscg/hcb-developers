@@ -64,8 +64,10 @@ markdown_extensions:
   - pymdownx.emoji
   - toc:
       permalink: true
-  - pymdownx.highlight:
-      guess_lang: false
+  - pymdownx.highlight
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 
 plugins:
   - search
