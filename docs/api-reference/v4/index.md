@@ -10,21 +10,31 @@ hide:
 
 
 <div id="app"></div>
-<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
-<!-- Initialize the Scalar API Reference -->
+<!-- Load Scalar and initialize it directly -->
 <script>
+    // Define configuration first
     var configuration = {
         theme: 'alternate',
         // Do not use the default fonts from the Scalar CDN
         withDefaultFonts: 'false',
-      }
-
-  Scalar.createApiReference('#app', {
-    // The URL of the OpenAPI/Swagger document
-    url: '/assets/v4.yaml',
-    // Avoid CORS issues
-    proxyUrl: 'https://proxy.scalar.com',
-  })
+    };
+    
+    function loadScalar() {
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
+        script.onload = function() {
+            // Initialize immediately after script loads
+            Scalar.createApiReference('#app', {
+                // The URL of the OpenAPI/Swagger document
+                url: '/assets/v4.yaml',
+                // Avoid CORS issues
+                proxyUrl: 'https://proxy.scalar.com',
+            });
+        };
+        document.head.appendChild(script);
+    }
+    
+    loadScalar();
 </script>
 
 <style>
