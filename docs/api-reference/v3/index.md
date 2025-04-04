@@ -26,7 +26,7 @@ hide:
             // Initialize immediately after script loads
             Scalar.createApiReference('#app', {
                 // The URL of the OpenAPI/Swagger document
-                url: '/assets/v4.yaml',
+                url: 'https://hcb.hackclub.com/api/v3/swagger_doc',
                 // Avoid CORS issues
                 proxyUrl: 'https://proxy.scalar.com',
             });

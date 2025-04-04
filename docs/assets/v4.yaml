@@ -7,485 +7,1204 @@ servers:
   - url: https://hcb.hackclub.com/
   - url: http://localhost:3000/
 tags:
-  - name: Events
-    description: Events endpoints
-  - name: Stripe Cards
-    description: Operations related to Stripe cards
-  - name: Invitations
-    description: Operations related to invitations
+  - name: User
+    description: Operations related to the authenticated user.
+  - name: Organizations
+    description: Operations related to organizations (events).
+  - name: Cards
+    description: Operations related to Stripe cards.
   - name: Card Grants
-    description: Operations related to card grants
-  - name: Receipts
-    description: Operations related to receipts
+    description: Operations related to card grants.
+  - name: Invitations
+    description: Operations related to invitations for the user.
   - name: Transactions
-    description: Operations related to transactions
+    description: Operations related to financial transactions.
+  - name: Receipts
+    description: Operations related to transaction receipts.
   - name: Comments
-    description: Operations related to comments
+    description: Operations related to transaction comments.
+  - name: Transfers
+    description: Operations related to fund transfers (disbursements).
+  - name: Donations
+    description: Operations related to donations.
   - name: Stripe Terminal
-    description: Operations related to Stripe terminal
+    description: Operations related to Stripe Terminal.
 paths:
-  /api/v4/events:
+  /api/v4/user:
     get:
       tags:
-        - Events
-      summary: Get a list of events
-      parameters:
-        - name: limit
-          in: query
-          description: Number of events to return (default is 25)
-          required: false
-          schema:
-            type: integer
-            default: 25
-        - name: after
-          in: query
-          description: Cursor for pagination
-          required: false
-          schema:
-            type: string
+        - User
+      summary: Get authenticated user details
+      description: Retrieves the profile information for the currently authenticated user.
       responses:
         '200':
-          description: A list of events
+          description: User details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized - Invalid or missing authentication token.
+        '403':
+          description: Forbidden - User is not authorized for this action.
+  /api/v4/user/organizations:
+    get:
+      tags:
+        - User
+        - Organizations
+      summary: List user's organizations
+      description: Retrieves a list of organizations (events) the authenticated user is associated with.
+      responses:
+        '200':
+          description: A list of the user's organizations.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
-  /api/v4/events/{id}:
+                  $ref: '#/components/schemas/OrganizationSummary' # Use a summary schema if full details aren't needed
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+  /api/v4/user/cards:
     get:
       tags:
-        - Events
-      summary: Get details of a specific event
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+        - User
+        - Cards
+      summary: List user's cards
+      description: Retrieves a list of Stripe cards associated with the authenticated user.
       responses:
         '200':
-          description: Event details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Event'
-    patch:
-      tags:
-        - Events
-      summary: Update a specific event
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Event update details
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Event'
-      responses:
-        '200':
-          description: Event updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Event'
-  /api/v4/events/{id}/transactions:
-    get:
-      tags:
-        - Events
-        - Transactions
-      summary: Get transactions for a specific event
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: limit
-          in: query
-          description: Number of transactions to return (default is 25)
-          required: false
-          schema:
-            type: integer
-            default: 25
-        - name: after
-          in: query
-          description: Cursor for pagination
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A list of transactions
+          description: A list of the user's cards.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Transaction'
-  /api/v4/stripe_cards:
+                  $ref: '#/components/schemas/Card'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+  /api/v4/user/card_grants:
     get:
       tags:
-        - Stripe Cards
-      summary: Get a list of Stripe cards
-      parameters:
-        - name: event_id
-          in: query
-          description: Filter by event ID
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A list of Stripe cards
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StripeCard'
-  /api/v4/stripe_cards/{id}:
-    get:
-      tags:
-        - Stripe Cards
-      summary: Get details of a specific Stripe card
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Stripe card details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StripeCard'
-    patch:
-      tags:
-        - Stripe Cards
-      summary: Update a specific Stripe card
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Stripe card update details
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StripeCard'
-      responses:
-        '200':
-          description: Stripe card updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StripeCard'
-  /api/v4/stripe_cards/{id}/transactions:
-    get:
-      tags:
-        - Stripe Cards
-        - Transactions
-      summary: Get transactions for a specific Stripe card
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A list of transactions
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Transaction'
-    patch:
-      tags:
-        - Stripe Cards
-        - Transactions
-      summary: Update transactions for a specific Stripe card
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Transaction update details
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Transaction'
-      responses:
-        '200':
-          description: Transactions updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Transaction'
-  /api/v4/invitations:
-    get:
-      tags:
-        - Invitations
-      summary: Get a list of invitations
-      responses:
-        '200':
-          description: A list of invitations
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Invitation'
-  /api/v4/invitations/{id}:
-    get:
-      tags:
-        - Invitations
-      summary: Get details of a specific invitation
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Invitation details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Invitation'
-    post:
-      tags:
-        - Invitations
-      summary: Accept an invitation
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Invitation accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Invitation'
-    delete:
-      tags:
-        - Invitations
-      summary: Reject an invitation
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Invitation rejected
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Invitation'
-  /api/v4/card_grants:
-    get:
-      tags:
+        - User
         - Card Grants
-      summary: Get a list of card grants
-      parameters:
-        - name: event_id
-          in: query
-          description: Filter by event ID
-          required: false
-          schema:
-            type: string
+      summary: List user's card grants
+      description: Retrieves a list of card grants associated with the authenticated user.
       responses:
         '200':
-          description: A list of card grants
+          description: A list of the user's card grants.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/CardGrant'
-    post:
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+  /api/v4/user/invitations:
+    get:
       tags:
-        - Card Grants
-      summary: Create a new card grant
-      parameters:
-        - name: event_id
-          in: query
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Card grant details
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CardGrant'
+        - User
+        - Invitations
+      summary: List user's pending invitations
+      description: Retrieves a list of pending organizer position invitations for the authenticated user.
       responses:
-        '201':
-          description: Card grant created
+        '200':
+          description: A list of pending invitations.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CardGrant'
-  /api/v4/card_grants/{id}:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invitation'
+        '401':
+          description: Unauthorized.
+  /api/v4/user/invitations/{id}:
     get:
       tags:
-        - Card Grants
-      summary: Get details of a specific card grant
+        - User
+        - Invitations
+      summary: Get invitation details
+      description: Retrieves details for a specific pending invitation belonging to the authenticated user.
       parameters:
         - name: id
           in: path
           required: true
+          description: The public ID or friendly ID (slug) of the invitation.
           schema:
             type: string
       responses:
         '200':
-          description: Card grant details
+          description: Invitation details retrieved successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CardGrant'
+                $ref: '#/components/schemas/Invitation'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Invitation not found or not accessible by the user.
+  /api/v4/user/invitations/{id}/accept:
     post:
       tags:
-        - Card Grants
-      summary: Top up a card grant
+        - User
+        - Invitations
+      summary: Accept an invitation
+      description: Accepts a pending organizer position invitation for the authenticated user.
       parameters:
         - name: id
           in: path
           required: true
+          description: The public ID or friendly ID (slug) of the invitation.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invitation accepted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation' # Returns the updated invitation
+        '400':
+          description: Bad Request - Invalid operation (e.g., already accepted/rejected, requires contract).
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Invitation not found or not accessible by the user.
+  /api/v4/user/invitations/{id}/reject:
+    post:
+      tags:
+        - User
+        - Invitations
+      summary: Reject an invitation
+      description: Rejects a pending organizer position invitation for the authenticated user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID or friendly ID (slug) of the invitation.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invitation rejected successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation' # Returns the updated invitation
+        '400':
+          description: Bad Request - Invalid operation (e.g., already accepted/rejected).
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Invitation not found or not accessible by the user.
+  /api/v4/user/transactions/missing_receipt:
+    get:
+      tags:
+        - User
+        - Transactions
+        - Receipts
+      summary: List transactions missing receipts
+      description: Retrieves a list of the authenticated user's transactions that require a receipt but do not have one attached.
+      responses:
+        '200':
+          description: A list of transactions missing receipts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionSummary' # Use a summary schema
+        '401':
+          description: Unauthorized.
+  /api/v4/user/available_icons:
+    get:
+      tags:
+        - User
+      summary: Get available user profile icons
+      description: Retrieves a map of special icons available for the user's profile based on their activities and affiliations.
+      responses:
+        '200':
+          description: Available icons retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailableIcons'
+        '401':
+          description: Unauthorized.
+  /api/v4/organizations/{id}:
+    get:
+      tags:
+        - Organizations
+      summary: Get organization details
+      description: Retrieves details for a specific organization (event).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID or friendly ID (slug) of the organization.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Organization details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Organization not found.
+  /api/v4/organizations/{event_id}/cards:
+    get:
+      tags:
+        - Organizations
+        - Cards
+      summary: List organization's cards
+      description: Retrieves a list of Stripe cards associated with a specific organization.
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          description: The public ID or friendly ID (slug) of the organization.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of the organization's cards.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Card'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Organization not found.
+  /api/v4/organizations/{event_id}/card_grants:
+    get:
+      tags:
+        - Organizations
+        - Card Grants
+      summary: List organization's card grants
+      description: Retrieves a list of card grants issued by a specific organization.
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          description: The public ID or friendly ID (slug) of the organization.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of the organization's card grants.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardGrant'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Organization not found.
+    post:
+      tags:
+        - Organizations
+        - Card Grants
+      summary: Create a card grant
+      description: Creates a new card grant issued by a specific organization.
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          description: The public ID or friendly ID (slug) of the organization.
           schema:
             type: string
       requestBody:
-        description: Top up details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount_cents
+                - email
+              properties:
+                amount_cents:
+                  type: integer
+                  description: The grant amount in cents.
+                  example: 5000
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the recipient.
+                merchant_lock:
+                  type: string
+                  description: Comma-separated list of allowed merchant network IDs.
+                  nullable: true
+                category_lock:
+                  type: string
+                  description: Comma-separated list of allowed merchant category codes.
+                  nullable: true
+                keyword_lock:
+                  type: string
+                  description: Keyword to lock transactions to.
+                  nullable: true
+                purpose:
+                  type: string
+                  description: A short purpose for the grant (max 30 chars).
+                  maxLength: 30
+                  nullable: true
+      responses:
+        '201':
+          description: Card grant created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant'
+        '400':
+          description: Bad Request - Invalid parameters (e.g., validation errors).
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Organization not found.
+  /api/v4/organizations/{event_id}/transactions:
+    get:
+      tags:
+        - Organizations
+        - Transactions
+      summary: List organization's transactions
+      description: Retrieves a paginated list of transactions associated with a specific organization.
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          description: The public ID or friendly ID (slug) of the organization.
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of transactions to return.
+          schema:
+            type: integer
+            default: 25
+        - name: after
+          in: query
+          description: Cursor for pagination (public ID of the transaction to start after).
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Filter by transaction type (e.g., 'card', 'invoice', 'donation').
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of the organization's transactions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TransactionSummary' # Use a summary schema
+                  has_more:
+                    type: boolean
+                    description: Indicates if there are more transactions available for pagination.
+                  total_count:
+                    type: integer
+                    description: Total number of transactions matching the filter.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Organization not found.
+  /api/v4/organizations/{event_id}/transfers:
+    post:
+      tags:
+        - Organizations
+        - Transfers
+      summary: Create a transfer (disbursement)
+      description: Initiates a fund transfer (disbursement) from one organization to another.
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          description: The public ID or friendly ID (slug) of the source organization.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - to_organization_id
+                - amount_cents
+                - name
+              properties:
+                to_organization_id:
+                  type: string
+                  description: The public ID or friendly ID (slug) of the destination organization.
+                amount_cents:
+                  type: integer
+                  description: The transfer amount in cents.
+                  example: 10000
+                name:
+                  type: string
+                  description: A name or description for the transfer.
+                  example: "Grant Payment"
+      responses:
+        '200': # Controller renders :show on success, implying 200 OK
+          description: Transfer created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Disbursement'
+        '400':
+          description: Bad Request - Invalid parameters or operation (e.g., insufficient funds, validation errors).
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Source or destination organization not found.
+  /api/v4/organizations/{event_id}/donations:
+    post:
+      tags:
+        - Organizations
+        - Donations
+      summary: Create an in-person donation
+      description: Records an in-person donation collected for a specific organization.
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          description: The public ID or friendly ID (slug) of the organization receiving the donation.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount_cents
+              properties:
+                amount_cents:
+                  type: integer
+                  description: The donation amount in cents.
+                  example: 2500
+                name:
+                  type: string
+                  description: Name of the donor (optional).
+                  nullable: true
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the donor (optional).
+                  nullable: true
+      responses:
+        '200': # Controller renders :show on success, implying 200 OK
+          description: Donation recorded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Donation'
+        '400':
+          description: Bad Request - Invalid parameters (e.g., validation errors).
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Organization not found.
+  /api/v4/transactions/{id}:
+    get:
+      tags:
+        - Transactions
+      summary: Get transaction details
+      description: Retrieves details for a specific transaction (identified by HCB Code public ID).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the HCB Code representing the transaction.
+          schema:
+            type: string
+            example: txn_abc123xyz
+        - name: event_id
+          in: query
+          description: Optional. The public ID or slug of an event to scope the transaction context (if ambiguous).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Transaction details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDetail'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Transaction or associated event not found.
+  /api/v4/organizations/{event_id}/transactions/{id}:
+    put:
+      tags:
+        - Organizations
+        - Transactions
+      summary: Update a transaction
+      description: Updates details of a specific transaction within an organization's context. Currently supports updating the memo.
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          description: The public ID or friendly ID (slug) of the organization.
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the HCB Code representing the transaction.
+          schema:
+            type: string
+            example: txn_abc123xyz
+      requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                amount_cents:
-                  type: integer
+                memo:
+                  type: string
+                  description: The new memo for the transaction.
+                  nullable: true # Can be set to null/empty to clear custom memo
       responses:
         '200':
-          description: Card grant topped up
+          description: Transaction updated successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CardGrant'
+                $ref: '#/components/schemas/TransactionDetail'
+        '400':
+          description: Bad Request - Invalid parameters.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Transaction or organization not found.
     patch:
       tags:
-        - Card Grants
-      summary: Update a card grant
+        - Organizations
+        - Transactions
+      summary: Update a transaction
+      description: Updates details of a specific transaction within an organization's context. Currently supports updating the memo.
       parameters:
+        - name: event_id
+          in: path
+          required: true
+          description: The public ID or friendly ID (slug) of the organization.
+          schema:
+            type: string
         - name: id
           in: path
           required: true
+          description: The public ID of the HCB Code representing the transaction.
           schema:
             type: string
+            example: txn_abc123xyz
       requestBody:
-        description: Updated card grant details
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CardGrant'
+              type: object
+              properties:
+                memo:
+                  type: string
+                  description: The new memo for the transaction.
+                  nullable: true # Can be set to null/empty to clear custom memo
       responses:
         '200':
-          description: Card grant updated
+          description: Transaction updated successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CardGrant'
-    delete:
-      tags:
-        - Card Grants
-      summary: Cancel a card grant
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Card grant cancelled
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CardGrant'
-  /api/v4/receipts:
+                $ref: '#/components/schemas/TransactionDetail'
+        '400':
+          description: Bad Request - Invalid parameters.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Transaction or organization not found.
+  /api/v4/transactions/{transaction_id}/receipts:
     get:
       tags:
+        - Transactions
         - Receipts
-      summary: Get a list of receipts
+      summary: List receipts for a transaction
+      description: Retrieves a list of receipts attached to a specific transaction (HCB Code).
       parameters:
         - name: transaction_id
-          in: query
+          in: path
           required: true
+          description: The public ID of the HCB Code representing the transaction.
           schema:
             type: string
+            example: txn_abc123xyz
       responses:
         '200':
-          description: A list of receipts
+          description: A list of receipts for the transaction.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Receipt'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Transaction not found.
     post:
       tags:
+        - Transactions
         - Receipts
-      summary: Create a new receipt
+      summary: Attach a receipt to a transaction
+      description: Uploads and attaches a receipt file to a specific transaction (HCB Code).
       parameters:
         - name: transaction_id
-          in: query
+          in: path
           required: true
+          description: The public ID of the HCB Code representing the transaction.
           schema:
             type: string
+            example: txn_abc123xyz
       requestBody:
-        description: Receipt details
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Receipt'
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The receipt file to upload (image or PDF).
       responses:
         '201':
-          description: Receipt created
+          description: Receipt attached successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Receipt'
-  /api/v4/stripe_terminal/connection_token:
+        '400':
+          description: Bad Request - Invalid file or parameters.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden - User cannot upload to this transaction.
+        '404':
+          description: Transaction not found.
+  /api/v4/transactions/{transaction_id}/comments:
+    get:
+      tags:
+        - Transactions
+        - Comments
+      summary: List comments for a transaction
+      description: Retrieves a list of comments associated with a specific transaction (HCB Code).
+      parameters:
+        - name: transaction_id
+          in: path
+          required: true
+          description: The public ID of the HCB Code representing the transaction.
+          schema:
+            type: string
+            example: txn_abc123xyz
+      responses:
+        '200':
+          description: A list of comments for the transaction.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Transaction not found.
+  /api/v4/transactions/{id}/memo_suggestions:
+    get:
+      tags:
+        - Transactions
+      summary: Get memo suggestions for a transaction
+      description: Retrieves a list of suggested memos for a specific transaction (HCB Code).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the HCB Code representing the transaction.
+          schema:
+            type: string
+            example: txn_abc123xyz
+      responses:
+        '200':
+          description: A list of suggested memos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemoSuggestion'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Transaction not found.
+  /api/v4/cards/{id}:
+    get:
+      tags:
+        - Cards
+      summary: Get card details
+      description: Retrieves details for a specific Stripe card.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the card.
+          schema:
+            type: string
+            example: crd_abc123xyz
+      responses:
+        '200':
+          description: Card details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Card not found.
+    put:
+      tags:
+        - Cards
+      summary: Update card status
+      description: Updates the status of a specific Stripe card (e.g., freeze/unfreeze).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the card.
+          schema:
+            type: string
+            example: crd_abc123xyz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [active, frozen]
+                  description: The desired status ('active' to unfreeze, 'frozen' to freeze).
+      responses:
+        '200':
+          description: Card status updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: Bad Request - Invalid status or operation.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Card not found.
+    patch:
+      tags:
+        - Cards
+      summary: Update card status
+      description: Updates the status of a specific Stripe card (e.g., freeze/unfreeze).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the card.
+          schema:
+            type: string
+            example: crd_abc123xyz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [active, frozen]
+                  description: The desired status ('active' to unfreeze, 'frozen' to freeze).
+      responses:
+        '200':
+          description: Card status updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: Bad Request - Invalid status or operation.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Card not found.
+  /api/v4/cards/{id}/transactions:
+    get:
+      tags:
+        - Cards
+        - Transactions
+      summary: List card's transactions
+      description: Retrieves a list of transactions associated with a specific Stripe card.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the card.
+          schema:
+            type: string
+            example: crd_abc123xyz
+        - name: missing_receipts
+          in: query
+          description: Set to 'true' to only return transactions missing receipts.
+          schema:
+            type: string # Often sent as string 'true'
+            enum: ["true"]
+      responses:
+        '200':
+          description: A list of the card's transactions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TransactionSummary' # Use a summary schema
+                  has_more:
+                    type: boolean
+                    description: Indicates if there are more transactions available for pagination.
+                  total_count:
+                    type: integer
+                    description: Total number of transactions matching the filter.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Card not found.
+  /api/v4/cards/{id}/ephemeral_keys:
+    get:
+      tags:
+        - Cards
+      summary: Get ephemeral key for card details
+      description: Retrieves a short-lived ephemeral key to securely display virtual card details in a client application. Requires a trusted OAuth application.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the virtual card.
+          schema:
+            type: string
+            example: crd_abc123xyz
+        - name: nonce
+          in: query
+          required: true
+          description: A single-use nonce provided by the Stripe SDK.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ephemeral key retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EphemeralKeyResponse'
+        '400':
+          description: Bad Request - Card must be virtual or nonce invalid.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden - Application not trusted or user cannot access card.
+        '404':
+          description: Card not found.
+        '500':
+          description: Internal Server Error - Issue communicating with Stripe.
+  /api/v4/card_grants/{id}:
+    get:
+      tags:
+        - Card Grants
+      summary: Get card grant details
+      description: Retrieves details for a specific card grant.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the card grant.
+          schema:
+            type: string
+            example: cdg_abc123xyz
+      responses:
+        '200':
+          description: Card grant details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Card grant not found.
+    put:
+      tags:
+        - Card Grants
+      summary: Update a card grant
+      description: Updates the details (e.g., locks, purpose) of a specific card grant.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the card grant.
+          schema:
+            type: string
+            example: cdg_abc123xyz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchant_lock:
+                  type: string
+                  description: Comma-separated list of allowed merchant network IDs.
+                  nullable: true
+                category_lock:
+                  type: string
+                  description: Comma-separated list of allowed merchant category codes.
+                  nullable: true
+                keyword_lock:
+                  type: string
+                  description: Keyword to lock transactions to.
+                  nullable: true
+                purpose:
+                  type: string
+                  description: A short purpose for the grant (max 30 chars).
+                  maxLength: 30
+                  nullable: true
+      responses:
+        '200':
+          description: Card grant updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant'
+        '400':
+          description: Bad Request - Invalid parameters.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Card grant not found.
+    patch:
+      tags:
+        - Card Grants
+      summary: Update a card grant
+      description: Updates the details (e.g., locks, purpose) of a specific card grant.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the card grant.
+          schema:
+            type: string
+            example: cdg_abc123xyz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchant_lock:
+                  type: string
+                  description: Comma-separated list of allowed merchant network IDs.
+                  nullable: true
+                category_lock:
+                  type: string
+                  description: Comma-separated list of allowed merchant category codes.
+                  nullable: true
+                keyword_lock:
+                  type: string
+                  description: Keyword to lock transactions to.
+                  nullable: true
+                purpose:
+                  type: string
+                  description: A short purpose for the grant (max 30 chars).
+                  maxLength: 30
+                  nullable: true
+      responses:
+        '200':
+          description: Card grant updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant'
+        '400':
+          description: Bad Request - Invalid parameters.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Card grant not found.
+  /api/v4/card_grants/{id}/topup:
+    post:
+      tags:
+        - Card Grants
+      summary: Top up a card grant
+      description: Adds funds to an existing card grant.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the card grant.
+          schema:
+            type: string
+            example: cdg_abc123xyz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount_cents
+              properties:
+                amount_cents:
+                  type: integer
+                  description: The amount to add in cents (must be positive).
+                  example: 2000
+      responses:
+        '200':
+          description: Card grant topped up successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant' # Returns the updated grant
+        '400':
+          description: Bad Request - Invalid amount or operation.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Card grant not found.
+  /api/v4/card_grants/{id}/cancel:
+    post:
+      tags:
+        - Card Grants
+      summary: Cancel a card grant
+      description: Cancels an active card grant, returning any remaining funds and deactivating the associated card.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The public ID of the card grant.
+          schema:
+            type: string
+            example: cdg_abc123xyz
+      responses:
+        '200':
+          description: Card grant canceled successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardGrant' # Returns the updated grant
+        '400':
+          description: Bad Request - Invalid operation (e.g., grant not active).
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Card grant not found.
+  /api/v4/stripe_terminal_connection_token:
     get:
       tags:
         - Stripe Terminal
-      summary: Get a Stripe terminal connection token
+      summary: Get Stripe Terminal connection token
+      description: Retrieves a connection token required to connect to a Stripe Terminal reader.
       responses:
         '200':
-          description: Stripe terminal connection token
+          description: Connection token retrieved successfully.
           content:
             application/json:
               schema:
@@ -493,408 +1212,501 @@ paths:
                 properties:
                   terminal_connection_token:
                     type: string
-  /api/v4/comments:
-    get:
-      tags:
-        - Comments
-      summary: Get a list of comments
-      parameters:
-        - name: transaction_id
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A list of comments
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Comment'
-  /api/v4/transactions/{id}:
-    get:
-      tags:
-        - Transactions
-      summary: Get details of a specific transaction
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Transaction details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Transaction'
-    patch:
-      tags:
-        - Transactions
-      summary: Update a transaction
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Updated transaction details
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Transaction'
-      responses:
-        '200':
-          description: Transaction updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Transaction'
-  /api/v4/transactions/missing_receipt:
-    get:
-      tags:
-        - Transactions
-        - Receipts
-      summary: Get transactions missing receipts
-      responses:
-        '200':
-          description: A list of transactions missing receipts
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Transaction'
+                    description: The Stripe Terminal connection token.
+        '401':
+          description: Unauthorized.
+        '500':
+          description: Internal Server Error - Issue communicating with Stripe.
 components:
   schemas:
-    Event:
+    User:
       type: object
       properties:
         id:
           type: string
-          format: uuid
-          description: Unique identifier for the event
-        name:
-          type: string
-          description: Name of the event
-        description:
-          type: string
-          description: Description of the event
-        start_date:
-          type: string
-          format: date-time
-          description: Start date and time of the event
-        end_date:
-          type: string
-          format: date-time
-          description: End date and time of the event
-        location:
-          type: string
-          description: Location of the event
-        status:
-          type: string
-          enum: [planned, active, completed, cancelled]
-          description: Current status of the event
-        budget_cents:
-          type: integer
-          description: Budget for the event in cents
-        spent_cents:
-          type: integer
-          description: Amount spent for the event in cents
-        remaining_cents:
-          type: integer
-          description: Remaining budget for the event in cents
-        created_at:
-          type: string
-          format: date-time
-          description: When the event was created
-        updated_at:
-          type: string
-          format: date-time
-          description: When the event was last updated
-      required:
-        - id
-        - name
-        - status
-    
-    Transaction:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the transaction
-        amount_cents:
-          type: integer
-          description: Transaction amount in cents
-        currency:
-          type: string
-          enum: [USD]
-          description: Currency of the transaction
-        description:
-          type: string
-          description: Description of the transaction
-        merchant:
-          type: string
-          description: Merchant name
-        status:
-          type: string
-          enum: [pending, completed, declined, voided]
-          description: Status of the transaction
-        category:
-          type: string
-          description: Category of the transaction
-        card_id:
-          type: string
-          format: uuid
-          description: ID of the card used for the transaction
-        event_id:
-          type: string
-          format: uuid
-          description: ID of the associated event
-        receipt_required:
-          type: boolean
-          description: Whether a receipt is required for this transaction
-        has_receipt:
-          type: boolean
-          description: Whether this transaction has a receipt
-        created_at:
-          type: string
-          format: date-time
-          description: When the transaction occurred
-        updated_at:
-          type: string
-          format: date-time
-          description: When the transaction was last updated
-      required:
-        - id
-        - amount_cents
-        - currency
-        - status
-    
-    StripeCard:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the card
-        last4:
-          type: string
-          description: Last 4 digits of the card
-        cardholder_name:
-          type: string
-          description: Name of the cardholder
-        expiry_month:
-          type: integer
-          description: Expiry month of the card
-        expiry_year:
-          type: integer
-          description: Expiry year of the card
-        brand:
-          type: string
-          description: Card brand (Visa, Mastercard, etc.)
-        status:
-          type: string
-          enum: [active, inactive, cancelled, expired]
-          description: Status of the card
-        event_id:
-          type: string
-          format: uuid
-          description: ID of the associated event
-        user_id:
-          type: string
-          format: uuid
-          description: ID of the user assigned to this card
-        spending_limit_cents:
-          type: integer
-          description: Spending limit for the card in cents
-        spent_cents:
-          type: integer
-          description: Amount spent on this card in cents
-        created_at:
-          type: string
-          format: date-time
-          description: When the card was created
-        updated_at:
-          type: string
-          format: date-time
-          description: When the card was last updated
-      required:
-        - id
-        - last4
-        - status
-    
-    Invitation:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the invitation
+          description: The public ID of the user.
+          example: usr_abc123xyz
         email:
           type: string
           format: email
-          description: Email address of the invitee
-        role:
+        name:
           type: string
-          enum: [organizer, attendee, sponsor]
-          description: Role assigned to the invitee
-        event_id:
+          description: The user's preferred or full name.
+        avatar_url:
           type: string
-          format: uuid
-          description: ID of the associated event
-        status:
-          type: string
-          enum: [pending, accepted, rejected, expired]
-          description: Status of the invitation
-        expires_at:
-          type: string
-          format: date-time
-          description: When the invitation expires
-        created_at:
-          type: string
-          format: date-time
-          description: When the invitation was created
-        updated_at:
-          type: string
-          format: date-time
-          description: When the invitation was last updated
+          format: url
+          description: URL of the user's profile picture.
+          nullable: true
       required:
         - id
         - email
+        - name
+        - avatar_url
+    OrganizationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The public ID of the organization.
+          example: org_abc123xyz
+        name:
+          type: string
+        slug:
+          type: string
+        logo_url:
+          type: string
+          format: url
+          nullable: true
+        role:
+          type: string
+          enum: [reader, member, manager]
+      required:
+        - id
+        - name
+        - slug
+        - logo_url
         - role
-        - event_id
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The public ID of the organization.
+          example: org_abc123xyz
+        name:
+          type: string
+        slug:
+          type: string
+        logo_url:
+          type: string
+          format: url
+          nullable: true
+        balance_cents:
+          type: integer
+          description: Current available balance in cents.
+        pending_balance_cents:
+           type: integer
+           description: Pending balance in cents (not yet settled).
+        website:
+           type: string
+           format: url
+           nullable: true
+        address:
+           type: string
+           nullable: true
+        description:
+           type: string
+           nullable: true
+        created_at:
+           type: string
+           format: date-time
+      required:
+        - id
+        - name
+        - slug
+        - logo_url
+        - balance_cents
+        - pending_balance_cents
+        - website
+        - address
+        - description
+        - created_at
+    Card:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The public ID of the card.
+          example: crd_abc123xyz
+        last4:
+          type: string
+          description: Last 4 digits of the card number.
+        brand:
+          type: string
+          description: Card brand (e.g., Visa, Mastercard).
+        exp_month:
+          type: integer
+          description: Expiration month (1-12).
+        exp_year:
+          type: integer
+          description: Expiration year (YYYY).
+        status:
+          type: string
+          enum: [active, inactive, canceled]
+          description: Current status of the card.
+        type:
+          type: string
+          enum: [virtual, physical]
+          description: Type of the card.
+        organization:
+          $ref: '#/components/schemas/OrganizationSummary'
+        cardholder:
+          $ref: '#/components/schemas/User'
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - last4
+        - brand
+        - exp_month
+        - exp_year
         - status
-    
+        - type
+        - organization
+        - cardholder
+        - created_at
     CardGrant:
       type: object
       properties:
         id:
           type: string
-          format: uuid
-          description: Unique identifier for the card grant
+          description: The public ID of the card grant.
+          example: cdg_abc123xyz
         amount_cents:
           type: integer
-          description: Grant amount in cents
-        event_id:
-          type: string
-          format: uuid
-          description: ID of the associated event
-        user_id:
-          type: string
-          format: uuid
-          description: ID of the user receiving the grant
-        card_id:
-          type: string
-          format: uuid
-          description: ID of the card associated with this grant
+          description: Total granted amount in cents.
+        balance_cents:
+          type: integer
+          description: Current remaining balance in cents.
         status:
           type: string
-          enum: [pending, active, cancelled, completed]
-          description: Status of the card grant
-        note:
+          enum: [active, canceled, expired]
+        purpose:
           type: string
-          description: Note about the card grant
+          nullable: true
+        merchant_lock:
+          type: array
+          items:
+            type: string
+          description: List of allowed merchant network IDs.
+          nullable: true
+        category_lock:
+          type: array
+          items:
+            type: string
+          description: List of allowed merchant category codes.
+          nullable: true
+        keyword_lock:
+          type: string
+          nullable: true
         created_at:
           type: string
           format: date-time
-          description: When the card grant was created
-        updated_at:
+        expires_on:
           type: string
-          format: date-time
-          description: When the card grant was last updated
-        expires_at:
-          type: string
-          format: date-time
-          description: When the card grant expires
+          format: date
+          nullable: true
+        organization:
+          $ref: '#/components/schemas/OrganizationSummary'
+        recipient:
+          $ref: '#/components/schemas/User'
+        card:
+          type: object # Include basic card info if activated
+          nullable: true
+          properties:
+            id:
+              type: string
+            last4:
+              type: string
+            brand:
+              type: string
       required:
         - id
         - amount_cents
-        - event_id
+        - balance_cents
         - status
-    
+        - purpose
+        - merchant_lock
+        - category_lock
+        - keyword_lock
+        - created_at
+        - expires_on
+        - organization
+        - recipient
+        - card
+    Invitation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The public ID of the invitation.
+          example: ivt_abc123xyz
+        email:
+          type: string
+          format: email
+          description: Email address of the invitee.
+        role:
+          type: string
+          enum: [reader, member, manager]
+        is_signee:
+          type: boolean
+          description: Whether the invited position requires signing contracts.
+        status:
+          type: string
+          enum: [pending, accepted, rejected, cancelled]
+        created_at:
+          type: string
+          format: date-time
+        organization:
+          $ref: '#/components/schemas/OrganizationSummary'
+        sender:
+          $ref: '#/components/schemas/User'
+      required:
+        - id
+        - email
+        - role
+        - is_signee
+        - status
+        - created_at
+        - organization
+        - sender
+    TransactionSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The public ID of the HCB Code representing the transaction.
+          example: txn_abc123xyz
+        type:
+          type: string
+          enum: [card_charge, card_refund, donation, invoice, transfer, check, ach, bank_fee, unknown]
+        amount_cents:
+          type: integer
+          description: Transaction amount in cents (positive for income, negative for expense).
+        memo:
+          type: string
+          description: The transaction memo or description.
+        date:
+          type: string
+          format: date
+          description: The date the transaction occurred or posted.
+        status:
+          type: string
+          enum: [pending, completed, declined, reversed] # Simplified status
+        receipt_status:
+          type: string
+          enum: [required, attached, not_required, missing]
+        card: # Only present for card transactions
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+            last4:
+              type: string
+            brand:
+              type: string
+      required:
+        - id
+        - type
+        - amount_cents
+        - memo
+        - date
+        - status
+        - receipt_status
+        - card
+    TransactionDetail:
+      allOf:
+        - $ref: '#/components/schemas/TransactionSummary'
+        - type: object
+          properties:
+            comments_count:
+              type: integer
+            receipts:
+              type: array
+              items:
+                $ref: '#/components/schemas/Receipt'
+            cardholder: # Only present for card transactions
+              $ref: '#/components/schemas/User'
+            merchant: # Only present for card transactions
+              type: object
+              nullable: true
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                category_code:
+                  type: string
+                city:
+                  type: string
+                  nullable: true
+                state:
+                  type: string
+                  nullable: true
+                country:
+                  type: string
+                  nullable: true
+                postal_code:
+                  type: string
+                  nullable: true
+            linked_object: # Details about the source (Invoice, Donation, etc.)
+              type: object
+              nullable: true
+              properties:
+                type:
+                  type: string
+                  description: The type of linked object (e.g., 'Invoice', 'Donation').
+                id:
+                  type: string
+                  description: The public ID of the linked object.
+                name:
+                  type: string
+                  description: A display name for the linked object.
+          required:
+            - comments_count
+            - receipts
+            - cardholder
+            - merchant
+            - linked_object
     Receipt:
       type: object
       properties:
         id:
           type: string
-          format: uuid
-          description: Unique identifier for the receipt
-        transaction_id:
+          description: The public ID of the receipt.
+          example: rct_abc123xyz
+        url:
           type: string
-          format: uuid
-          description: ID of the associated transaction
-        image_url:
+          format: url
+          description: URL to the original receipt file.
+        thumbnail_url:
           type: string
-          format: uri
-          description: URL to the receipt image
-        notes:
-          type: string
-          description: Additional notes about the receipt
-        submitted_by:
-          type: string
-          format: uuid
-          description: ID of the user who submitted the receipt
-        status:
-          type: string
-          enum: [pending, approved, rejected]
-          description: Status of the receipt
-        created_at:
+          format: url
+          description: URL to a preview/thumbnail of the receipt.
+          nullable: true
+        uploaded_at:
           type: string
           format: date-time
-          description: When the receipt was created
-        updated_at:
-          type: string
-          format: date-time
-          description: When the receipt was last updated
+        uploader:
+          $ref: '#/components/schemas/User'
       required:
         - id
-        - transaction_id
-        - image_url
-    
+        - url
+        - thumbnail_url
+        - uploaded_at
+        - uploader
     Comment:
       type: object
       properties:
         id:
           type: string
-          format: uuid
-          description: Unique identifier for the comment
-        transaction_id:
+          description: The public ID of the comment.
+          example: cmt_abc123xyz
+        content:
           type: string
-          format: uuid
-          description: ID of the associated transaction
-        user_id:
-          type: string
-          format: uuid
-          description: ID of the user who made the comment
-        text:
-          type: string
-          description: Comment text
+          description: The text content of the comment.
         created_at:
           type: string
           format: date-time
-          description: When the comment was created
-        updated_at:
-          type: string
-          format: date-time
-          description: When the comment was last updated
+        author:
+          $ref: '#/components/schemas/User'
       required:
         - id
-        - transaction_id
-        - user_id
-        - text
-  
+        - content
+        - created_at
+        - author
+    Disbursement: # Represents a Transfer
+      type: object
+      properties:
+        id:
+          type: string
+          description: The public ID of the disbursement/transfer.
+          example: xfr_abc123xyz
+        amount_cents:
+          type: integer
+        name:
+          type: string
+          description: Name/description of the transfer.
+        status:
+          type: string
+          enum: [pending, processing, fulfilled, rejected, canceled, scheduled, errored]
+        created_at:
+          type: string
+          format: date-time
+        source_organization:
+          $ref: '#/components/schemas/OrganizationSummary'
+        destination_organization:
+          $ref: '#/components/schemas/OrganizationSummary'
+        requested_by:
+          $ref: '#/components/schemas/User'
+      required:
+        - id
+        - amount_cents
+        - name
+        - status
+        - created_at
+        - source_organization
+        - destination_organization
+        - requested_by
+    Donation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The public ID of the donation.
+          example: don_abc123xyz
+        amount_cents:
+          type: integer
+        status:
+          type: string
+          enum: [pending, in_transit, deposited, failed, refunded]
+        created_at:
+          type: string
+          format: date-time
+        donor_name:
+          type: string
+          nullable: true
+        donor_email:
+          type: string
+          format: email
+          nullable: true
+        collected_by: # For in-person donations
+          $ref: '#/components/schemas/User'
+          nullable: true
+      required:
+        - id
+        - amount_cents
+        - status
+        - created_at
+        - donor_name
+        - donor_email
+        - collected_by
+    AvailableIcons:
+      type: object
+      description: A map indicating which special profile icons are available for the user.
+      additionalProperties:
+        type: boolean
+      example:
+        frc: true
+        admin: false
+        platinum: true
+    EphemeralKeyResponse:
+      type: object
+      properties:
+        ephemeralKeySecret:
+          type: string
+          description: The secret portion of the ephemeral key.
+        stripe_id:
+          type: string
+          description: The Stripe ID of the card (`card_...`).
+      required:
+        - ephemeralKeySecret
+        - stripe_id
+    MemoSuggestion:
+      type: object
+      properties:
+        memo:
+          type: string
+          description: A suggested memo string.
+      required:
+        - memo
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
 security:
   - bearerAuth: []
+
